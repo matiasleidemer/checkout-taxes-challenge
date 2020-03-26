@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative './cart_item_scanner'
+require_relative './tax_calculator'
 
 class Checkout
   # Right now, it's fine to leave Checkout with the TaxRule knowledge since the
@@ -24,11 +25,11 @@ class Checkout
   end
 
   def add(item)
-    @items << CartItemScanner.scan(item, tax_rules)
+    @items << CartItemScanner.scan(item)
   end
 
   def receipt
-    lines = items.map(&:to_s)
+    lines = items_with_taxes.map(&:to_s)
     lines << "Sales Taxes: #{format('%.2f', sale_taxes)}"
     lines << "Total: #{format('%.2f', total)}"
     lines.join("\n") << "\n"
@@ -36,11 +37,15 @@ class Checkout
 
   private
 
+  def items_with_taxes
+    items.map { |item| TaxCalculator.item_with_taxes(item, tax_rules) }
+  end
+
   def sale_taxes
-    items.sum(&:sale_taxes)
+    items_with_taxes.sum(&:total) - items.sum(&:total)
   end
 
   def total
-    items.sum(&:total_with_taxes)
+    items_with_taxes.sum(&:total)
   end
 end
