@@ -2,6 +2,9 @@
 
 require_relative '../checkout'
 
+# I left only tests for the Checkout receipt method since it acts like an
+# integration test. Also, I didn't have time to implement unit tests for
+# the other classes.
 RSpec.describe 'Checkout' do
   it 'returns the receipt for regular products' do
     checkout = Checkout.new
