@@ -14,7 +14,7 @@ class CartItem
     "#{quantity} #{product}: #{format('%.2f', total_with_taxes)}"
   end
 
-  def tax
+  def sale_taxes
     total_with_taxes - total
   end
 
@@ -28,7 +28,7 @@ class CartItem
     return price unless taxes.any?
 
     taxes.inject(0) do |total_tax, tax|
-      total_tax += (price * tax[:multiplier]).round(2)
+      total_tax += (price * tax.multiplier).round(2)
       total_tax += 0.01 while (total_tax / 0.05).round(2) % 1 != 0
       total_tax
     end + price

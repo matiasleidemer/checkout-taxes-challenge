@@ -1,32 +1,37 @@
 # frozen_string_literal: true
 
-require_relative './item_scanner'
+require_relative './cart_item_scanner'
 
 class Checkout
+  TaxRule = Struct.new(:id, :name, :multiplier)
+
   TAX_RULES = {
-    basic: { id: :basic, name: 'Basic salex tax', multiplier: 0.1 },
-    import: { id: :import, name: 'Import duty', multiplier: 0.05 }
+    basic: TaxRule.new(:basic, 'Basic sales tax', 0.1),
+    import: TaxRule.new(:import, 'Import duty', 0.05)
   }.freeze
 
   attr_reader :items, :tax_rules
 
-  def initialize
+  def initialize(tax_rules: TAX_RULES)
     @items = []
+    @tax_rules = tax_rules
   end
 
   def add(item)
-    @items << ItemScanner.scan(item, TAX_RULES)
+    @items << CartItemScanner.scan(item, tax_rules)
   end
 
   def receipt
     lines = items.map(&:to_s)
-    lines << "Sales Taxes: #{format('%.2f', taxes)}"
+    lines << "Sales Taxes: #{format('%.2f', sale_taxes)}"
     lines << "Total: #{format('%.2f', total)}"
     lines.join("\n") << "\n"
   end
 
-  def taxes
-    items.sum(&:tax)
+  private
+
+  def sale_taxes
+    items.sum(&:sale_taxes)
   end
 
   def total
