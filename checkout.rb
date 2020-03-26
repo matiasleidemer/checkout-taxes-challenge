@@ -6,8 +6,8 @@ class Checkout
   ITEM_SCANNER = /(\d+)([\w\s]+) at (.+)/.freeze
 
   TAX_RULES = {
-    basic: { name: 'Basic salex tax', multiplier: 0.1 },
-    import: { name: 'Import duty', multiplier: 0.05 }
+    basic: { id: :basic, name: 'Basic salex tax', multiplier: 0.1 },
+    import: { id: :import, name: 'Import duty', multiplier: 0.05 }
   }.freeze
 
   attr_reader :items, :tax_rules
@@ -45,10 +45,11 @@ class Checkout
     def price_with_taxes
       return price unless taxes.any?
 
-      taxes.inject(0) do |total, tax|
-        total += price + (price * tax[:multiplier]).round(2)
-        total
-      end
+      taxes.inject(0) do |total_tax, foo|
+        total_tax += (price * foo[:multiplier]).round(2)
+        total_tax += 0.01 while (total_tax / 0.05).round(2) % 1 != 0
+        total_tax
+      end + price
     end
 
     def price
@@ -64,7 +65,7 @@ class Checkout
     end
 
     def to_s
-      "#{quantity} #{product.name}: #{total_with_taxes}"
+      "#{quantity} #{product.name}: #{format('%.2f', total_with_taxes)}"
     end
   end
 
