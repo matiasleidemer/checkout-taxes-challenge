@@ -27,6 +27,9 @@ class CartItem
   def price_with_taxes
     return price unless taxes.any?
 
+    # I'm not sure a CartItem should be able to perform such a complex
+    # operation like this. But, since I couldn't find a better abstraction,
+    # I decided to keep it here.
     taxes.inject(0) do |total_tax, tax|
       total_tax += (price * tax.multiplier).round(2)
       total_tax += 0.01 while (total_tax / 0.05).round(2) % 1 != 0

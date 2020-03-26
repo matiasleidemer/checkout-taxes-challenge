@@ -3,6 +3,12 @@
 require_relative './cart_item_scanner'
 
 class Checkout
+  # Right now, it's fine to leave Checkout with the TaxRule knowledge since the
+  # application is so small. Ideally, Checkout and TaxRule should be decoupled
+  # from each other.
+  # Checkout instances can have their own set of tax rules based on the given
+  # context. For instance, the checkout process in Brazil has different tax
+  # rules from a checkout in the USA.
   TaxRule = Struct.new(:id, :name, :multiplier)
 
   TAX_RULES = {
