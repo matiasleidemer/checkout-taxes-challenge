@@ -1,21 +1,17 @@
 # frozen_string_literal: true
 
-require 'forwardable'
-
 class CartItem
-  extend Forwardable
-  def_delegators :@product, :price, :name
+  attr_reader :quantity, :product, :price, :taxes
 
-  attr_reader :quantity, :product, :taxes
-
-  def initialize(quantity:, product:, taxes:)
+  def initialize(quantity:, product:, price:, taxes:)
     @quantity = quantity
     @product = product
+    @price = price
     @taxes = taxes
   end
 
   def to_s
-    "#{quantity} #{product.name}: #{format('%.2f', total_with_taxes)}"
+    "#{quantity} #{product}: #{format('%.2f', total_with_taxes)}"
   end
 
   def tax
