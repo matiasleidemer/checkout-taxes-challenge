@@ -5,8 +5,15 @@ require_relative './cart_item'
 class CartItemScanner
   ITEM_LINE = /(\d+)([\w\s]+) at (.+)/.freeze
 
+  class ScanError < StandardError
+  end
+
   def self.scan(item, tax_rules = {})
     match = ITEM_LINE.match(item)
+
+    if match.nil? || match.size != 4
+      raise ScanError, "Couldn't scan cart item: #{item}"
+    end
 
     quantity = match[1].to_i
     product = match[2].strip
