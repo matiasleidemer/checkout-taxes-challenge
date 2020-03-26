@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative './product'
+require_relative './cart_item'
 
 class Checkout
   ITEM_SCANNER = /(\d+)([\w\s]+) at (.+)/.freeze
@@ -37,38 +38,6 @@ class Checkout
 
   private
 
-  Item = Struct.new(:quantity, :product, :taxes) do
-    def tax
-      total_with_taxes - total
-    end
-
-    def price_with_taxes
-      return price unless taxes.any?
-
-      taxes.inject(0) do |total_tax, tax|
-        total_tax += (price * tax[:multiplier]).round(2)
-        total_tax += 0.01 while (total_tax / 0.05).round(2) % 1 != 0
-        total_tax
-      end + price
-    end
-
-    def price
-      product.price
-    end
-
-    def total
-      (price * quantity).round(2)
-    end
-
-    def total_with_taxes
-      (price_with_taxes * quantity).round(2)
-    end
-
-    def to_s
-      "#{quantity} #{product.name}: #{format('%.2f', total_with_taxes)}"
-    end
-  end
-
   def scan(item)
     match = ITEM_SCANNER.match(item)
 
@@ -79,6 +48,6 @@ class Checkout
     taxes << TAX_RULES.fetch(:basic) unless /(chocolate|pill|book)/.match?(product.name)
     taxes << TAX_RULES.fetch(:import) if product.name.include?('imported')
 
-    Item.new(quantity, product, taxes)
+    CartItem.new(quantity: quantity, product: product, taxes: taxes)
   end
 end
