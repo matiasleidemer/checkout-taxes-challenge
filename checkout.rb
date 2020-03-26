@@ -45,8 +45,8 @@ class Checkout
     def price_with_taxes
       return price unless taxes.any?
 
-      taxes.inject(0) do |total_tax, foo|
-        total_tax += (price * foo[:multiplier]).round(2)
+      taxes.inject(0) do |total_tax, tax|
+        total_tax += (price * tax[:multiplier]).round(2)
         total_tax += 0.01 while (total_tax / 0.05).round(2) % 1 != 0
         total_tax
       end + price

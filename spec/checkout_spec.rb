@@ -34,4 +34,23 @@ RSpec.describe 'Checkout' do
 
     expect(checkout.receipt).to eql(output)
   end
+
+  it 'returns the receipt for regular and imported products' do
+    checkout = Checkout.new
+    checkout.add('1 imported bottle of perfume at 27.99')
+    checkout.add('1 bottle of perfume at 18.99')
+    checkout.add('1 packet of headache pills at 9.75')
+    checkout.add('3 box of imported chocolates at 11.25')
+
+    output = <<~EOI
+      1 imported bottle of perfume: 32.19
+      1 bottle of perfume: 20.89
+      1 packet of headache pills: 9.75
+      3 box of imported chocolates: 35.55
+      Sales Taxes: 7.90
+      Total: 98.38
+    EOI
+
+    expect(checkout.receipt).to eql(output)
+  end
 end
