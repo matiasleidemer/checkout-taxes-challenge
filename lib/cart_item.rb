@@ -19,7 +19,7 @@ class CartItem
   end
 
   def total_with_taxes
-    (price_with_taxes * quantity).round(2)
+    @total_with_taxes ||= (price_with_taxes * quantity).round(2)
   end
 
   private

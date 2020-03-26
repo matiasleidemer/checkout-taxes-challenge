@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../checkout'
+require_relative '../lib/checkout'
 
 # I left only tests for the Checkout receipt method since it acts like an
 # integration test. Also, I didn't have time to implement unit tests for

@@ -11,9 +11,7 @@ class CartItemScanner
   def self.scan(item, tax_rules = {})
     match = ITEM_LINE.match(item)
 
-    if match.nil? || match.size != 4
-      raise ScanError, "Couldn't scan cart item: #{item}"
-    end
+    raise ScanError, "Couldn't scan cart item: #{item}" if match&.size != 4
 
     quantity = match[1].to_i
     product = match[2].strip

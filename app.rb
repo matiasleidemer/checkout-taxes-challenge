@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative './checkout'
+require_relative './lib/checkout'
 
 checkout = Checkout.new
 input = File.open(ARGV[0], 'r')
