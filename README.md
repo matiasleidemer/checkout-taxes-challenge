@@ -1,6 +1,7 @@
 # Challenge Solution
 
-This repository implements a solution for the Checkout/Tax problem.
+This repository implements a solution for the Checkout/Tax problem. You can find
+more about it in the `CHALLENGE.md` file.
 
 ## Dependencies
 
