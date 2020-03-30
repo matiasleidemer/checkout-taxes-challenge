@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative './cart_item_scanner'
+require_relative './tax_selector'
 
 class Checkout
   # Right now, it's fine to leave Checkout with the TaxRule knowledge since the
@@ -20,11 +21,17 @@ class Checkout
 
   def initialize(tax_rules: TAX_RULES)
     @items = []
-    @tax_rules = tax_rules
+    @tax_rules = TaxSelector.new(tax_rules)
   end
 
   def add(item)
-    @items << CartItemScanner.scan(item, tax_rules)
+    cart_item = CartItemScanner.scan(item)
+
+    tax_rules.map_taxes(cart_item.product).each do |tax|
+      cart_item.add_tax(tax)
+    end
+
+    @items << cart_item
   end
 
   def receipt
