@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative './cart_item_scanner'
+require_relative './tax_selector'
 require_relative './tax_calculator'
 
 class Checkout
@@ -21,7 +22,7 @@ class Checkout
 
   def initialize(tax_rules: TAX_RULES)
     @items = []
-    @tax_rules = tax_rules
+    @tax_rules = TaxSelector.new(tax_rules)
   end
 
   def add(item)
@@ -38,7 +39,10 @@ class Checkout
   private
 
   def items_with_taxes
-    items.map { |item| TaxCalculator.item_with_taxes(item, tax_rules) }
+    items.map do |item|
+      taxes = tax_rules.map_taxes(item.product)
+      TaxCalculator.item_with_taxes(item, taxes)
+    end
   end
 
   def sale_taxes
