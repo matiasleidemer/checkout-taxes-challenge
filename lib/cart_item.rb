@@ -3,15 +3,19 @@
 class CartItem
   attr_reader :quantity, :product, :price, :taxes
 
-  def initialize(quantity:, product:, price:, taxes:)
+  def initialize(quantity:, product:, price:)
     @quantity = quantity
     @product = product
     @price = price
-    @taxes = taxes
+    @taxes = []
   end
 
   def to_s
     "#{quantity} #{product}: #{format('%.2f', total_with_taxes)}"
+  end
+
+  def add_tax(tax)
+    @taxes << tax
   end
 
   def sale_taxes

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require_relative './cart_item_scanner'
+require_relative './tax_rules/basic'
+require_relative './tax_rules/imported'
 
 class Checkout
   # Right now, it's fine to leave Checkout with the TaxRule knowledge since the
@@ -9,12 +11,10 @@ class Checkout
   # Checkout instances can have their own set of tax rules based on the given
   # context. For instance, the checkout process in Brazil has different tax
   # rules from a checkout in the USA.
-  TaxRule = Struct.new(:id, :name, :multiplier)
-
-  TAX_RULES = {
-    basic: TaxRule.new(:basic, 'Basic sales tax', 0.1),
-    import: TaxRule.new(:import, 'Import duty', 0.05)
-  }.freeze
+  TAX_RULES = [
+    TaxRules::Basic.new('Basic sales tax', 0.1),
+    TaxRules::Imported.new('Import duty', 0.05)
+  ].freeze
 
   attr_reader :items, :tax_rules
 
@@ -24,7 +24,13 @@ class Checkout
   end
 
   def add(item)
-    @items << CartItemScanner.scan(item, tax_rules)
+    cart_item = CartItemScanner.scan(item)
+
+    tax_rules.select { |tr| tr.apply?(cart_item) }.each do |tax|
+      cart_item.add_tax(tax)
+    end
+
+    @items << cart_item
   end
 
   def receipt
